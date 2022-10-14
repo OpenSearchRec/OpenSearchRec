@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <title>Author - {{author["text_fields"]["author_name"]}} - OpenSearchRec GoodReads Demo</title>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> 
+    </head>
+    <body>
+        <body>
+            <div class="container py-5">
+                <h1>{{author["text_fields"]["author_name"]}} - OpenSearchRec GoodReads Demo</h1>
+                <br>
+                <div class="row">
+                    <div class="">
+                        <form id="search_form" action="/">
+                            <div class="input-group">
+                                <input class="autocomplete form-control border-end-0 border shadow-none" type="search" placeholder="Search" name="q" value="{{author['text_fields']['author_name']}}">
+                                <button type="submit" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                    </svg>
+    
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    $( function() {
+                        $(".autocomplete").autocomplete({
+                            source: function (request, response_func) {
+                                $.ajax({
+                                    url: "/search_autocomplete",
+                                    dataType: "json",
+                                    data: {
+                                        "term": request.term
+                                    },
+                                    success: function(response) {response_func(response)}
+                                })
+                            },
+                            select: function( event, ui ) {
+                                ui.item.value = ui.item.label;
+                                $("#search_form").submit()
+                            }
+                        });
+                    });
+                </script>
+
+                <div class="card-deck ">
+                    <div class="card mb-3 rounded-0">
+                        <div class="row g-0">
+                            <div class="col-lg-8">
+                                <div class="card-body">
+                                    <p class="card-text">                            
+                                        <h2>
+                                            {{author.get("text_fields", {}).get("author_name", "") }}
+                                        </h2>
+                                    </p>
+                                    <p class="card-text">
+                                        <br> Score: {{author["score"]}}
+                                        <br> ID: {{author["id"]}}
+                                        <br> author_popularity_signal: {{author["numeric_fields"]["author_popularity_signal"]}}
+                                        <br> author_quality_signal: {{author["numeric_fields"]["author_quality_signal"]}}
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                {% if recommended_authors_json|length > 0 %}
+                    <h2>Other authors you might like </h2>
+                    <p>
+                        Recommendations based on author's alternating least squares embeddings.
+                    </p>
+                    <div class="card-deck ">
+                        {% for recommended_author in recommended_authors_json %}
+                            <div class="card mb-3 rounded-0">
+                                <div class="row g-0">
+                                    <div class="col-lg-8">
+                                        <div class="card-body">
+                                            <p class="card-text">                            
+                                                <b>
+                                                    <a href='/author/{{recommended_author["item"]["id"]}}'>{{recommended_author["item"].get("text_fields", {}).get("author_name", "") }}</a>
+                                                </b>
+                                            </p>
+                                            <p class="card-text">
+                                                <br> Score: {{recommended_author["score"]}}
+                                                <br> ID: {{recommended_author["id"]}}
+                                                <br> author_popularity_signal: {{recommended_author["item"]["numeric_fields"]["author_popularity_signal"]}}
+                                                <br> author_quality_signal: {{recommended_author["item"]["numeric_fields"]["author_quality_signal"]}}
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}            
+                    </div>
+                {% endif %}
+
+                <br><br>
+
+                <h2>Books by {{author["text_fields"]["author_name"]}}</h2>
+                <div class="card-deck ">
+                    {% for hit in books_by_author %}
+                        <div class="card mb-3 rounded-0">
+                            <div class="row g-0">
+                                <div class="col-lg-4 d-flex justify-content-center justify-content-lg-start">
+                                <a href='{{hit["item"].get("extra_information", {}).get("article_url", "") }}' target="_blank">
+                                    <img src="{{hit["item"].get("extra_information", {}).get("image_url", "") }}" style="height: 550px;" class="img-fluid " >
+                                </a>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="card-body">
+                                        <p class="card-text">                            
+                                            <b>
+                                                <a href='/book/{{hit["item"]["id"]}}'>{{hit["item"].get("text_fields", {}).get("title", "") }}</a>
+                                            </b>
+                                        </p>
+                                        <p class="card-text">
+                                            <br> Score: {{hit["score"]}}
+                                            <br> ID: {{hit["id"]}}
+                                            <br> popularity signal: {{hit["item"].get("numeric_fields", {}).get("book_popularity_signal", "") }}
+                                            <br> item_quality_signal: {{hit["item"].get("numeric_fields", {}).get("book_quality_signal", "")}}
+                                            <br> item_date: {{hit["item"].get("date_fields", {}).get("published_date", "") }}
+                                            <br> authors:
+                                            {% for author_info in hit["item"]["extra_information"]["authors_info_list"] %}
+                                                <a href="/author/{{author_info['author_id']}}">{{author_info["author_name"]}}</a>&nbsp;&nbsp;
+                                            {% endfor %}
+                    
+                                            <br> publisher: {{hit["item"].get("text_fields", {}).get("publisher", "") }}
+                                            <br> description: {{hit["item"].get("text_fields", {}).get("description", "") }}
+                                            <br> categorical_fields: {{hit["item"]["categorical_fields"] }}
+                    
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <br> Date: {{hit["item"].get("date_fields", {}).get("published_date", "") }}
+                                            </small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}            
+                </div>
+            </div>
+
+        <a href="/">Back to homepage</a>
+        <br><br>
+        <table>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    {{author}}
+                </td>
+            </tr>
+            <tr>
+                Authors you may also like
+            </tr>
+
+            <tr>
+                Authors you may also like
+            </tr>
+
+        </table>
+
+
+
+    </body>
+</html>
