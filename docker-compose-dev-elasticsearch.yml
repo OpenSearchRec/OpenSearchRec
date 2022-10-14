@@ -1,6 +1,6 @@
 version: '3'
 services: 
-  opensearchrec_news_elasticsearch:
+  opensearchrec_elasticsearch:
     image: elasticsearch:8.4.0
     environment:
       - network.host=0.0.0.0
