@@ -37,7 +37,7 @@ OpenSearchRec is an open source search engine and recommendation system library.
 - These instructions can be run from this directory
 - Important to note that endpoint does not have built-in authentication and https
 
-### Set environment variables appropriately  
+### Set environment variables  
 - The example values here are for a dev setup
 - The environment variables are picked up by the ElasticSearchRetrievalClientSettings object, which is used in the OpenSearchRecRetrievalAPI and defined in the OpenSearchRec/retrieval/ElasticSearchRetrievalClient.py file.
 - The elasticsearch_username and elasticsearch_password values are also by docker-compose-dev-elasticsearch.yml
@@ -59,9 +59,7 @@ docker compose -f docker-compose-dev-elasticsearch.yml up -d
 python3 -m venv env
 . env/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
-pip install -r models_requirements.txt
-
+pip install OpenSearchRec
 ```
 ### Run Endpoint
 ```

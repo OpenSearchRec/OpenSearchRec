@@ -1,27 +1,27 @@
 from setuptools import setup, find_packages
 
-
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
-
-with open('models_requirements.txt') as f:
-    models_requirements = f.read().splitlines()
-
-with open('README.md') as f:
-    readme = f.read()
-
 setup(
     name='OpenSearchRec',
-    version='0.2.0',
+    version='0.1.0',
     author='Sebastien L',
     packages=find_packages(
         include="OpenSearchRec*"
     ),
     license='Apache 2',
     description='OpenSearchRec: Open Source Search and Recommendations',
-    long_description=readme,
-    install_requires=required,
+    long_description='OpenSearchRec: Open Source Search and Recommendations. Code: https://github.com/OpenSearchRec/OpenSearchRec',
+    install_requires=[
+        "fastapi>=0.76.0",
+        "uvicorn[standard]>=0.17.6",
+        "pytest>=7.1.2",
+        "requests>=2.28.0",
+        "httpx>=0.23.0",
+        "numpy>=1.23.2"
+    ],
     extras_require={
-        "models": models_requirements
+        "models": [
+            "implicit",
+            "sentence-transformers"
+        ]
     }
 )
