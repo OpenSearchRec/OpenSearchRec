@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='OpenSearchRec',
-    version='0.1.0',
+    version='0.1.2',
     author='Sebastien L',
     packages=find_packages(
         include="OpenSearchRec*"
