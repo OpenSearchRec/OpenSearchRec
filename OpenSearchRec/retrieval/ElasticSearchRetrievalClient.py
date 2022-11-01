@@ -61,7 +61,7 @@ async def execute_async_es_request(
         request_params,
         settings,
         allowed_status_codes,
-        timeout=15):
+        timeout=60):
     base_url = settings.elasticsearch_host
     if base_url[-1] == "/" and request_url_path[0] == "/":
         request_url = base_url[:-1] + request_url_path
